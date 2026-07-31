@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download dump.json from BetaWorld
-        run: curl -L "https://www.betaworld.cn/dump.json" -o dump.json
+        run: curl -L "https://techbench.betaworld.cn/dump.json" -o dump.json
 
       - name: Commit updated dump.json
         run: |
