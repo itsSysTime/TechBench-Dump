@@ -1,0 +1,39 @@
+name: Update dump.json
+
+on:
+  schedule:
+    - cron: "0 */8 * * *"
+  workflow_dispatch:        
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Download dump.json from BetaWorld
+        run: curl -L "https://www.betaworld.cn/dump.json" -o dump.json
+
+      - name: Commit updated dump.json
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add dump.json
+          git commit -m "Auto-update dump.json" || echo "No changes"
+          git push
+
+      - name: Upload artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: update
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
