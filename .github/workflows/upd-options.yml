@@ -64,46 +64,57 @@ jobs:
             | .[]
           ' option-values.json > append_options.tmp
 
-      - name: Insert sorted missing IDs after previous ID
+      - name: Insert sorted missing IDs at correct numeric positions
         run: |
-          # Determine first missing ID
-          first_missing=$(head -n 1 missing_ids.tmp)
-          prev_id=$((first_missing - 1))
-
-          # Sort missing IDs numerically and remove duplicates
+          # Sort missing IDs
           sort -n missing_ids.tmp | uniq > unique_missing_ids.tmp
 
-          # Rebuild sorted <option> lines for missing IDs
-          : > append_options.tmp
-          while read id; do
+          # Sort existing IDs
+          sort -n existing_ids.tmp > sorted_existing_ids.tmp
+
+          # Load missing IDs into array
+          mapfile -t missing < unique_missing_ids.tmp
+
+          # Load existing IDs into array
+          mapfile -t existing < sorted_existing_ids.tmp
+
+          # Prepare working file
+          cp tb.html tb.new.html
+
+          # For each missing ID, find correct insertion point
+          for id in "${missing[@]}"; do
+            # Find previous existing ID
+            prev=$(printf "%s\n" "${existing[@]}" | awk -v id="$id" '$1 < id {print}' | tail -n 1)
+
+            # Build option line
             label=$(jq -r --arg id "$id" '.products[$id]' option-values.json)
-            echo "<option value=\"$id\">$label</option>" >> append_options.tmp
-          done < unique_missing_ids.tmp
+            option="<option value=\"$id\">$label</option>"
 
-          # Insert the sorted missing ID block AFTER the previous ID, or before the end marker if the previous ID isn't found
-          insert_line=$(grep -n "<option value=\"$prev_id\">" tb.html | cut -d: -f1 || true)
-
-          if [ -z "$insert_line" ]; then
-            awk '
-            /<!-- OPT-END -->/ {
-              system("cat append_options.tmp")
-              print
-              next
-            }
-            { print }
-            ' tb.html > tb.new.html
-          else
-            awk -v insert_line="$insert_line" '
-            NR == insert_line {
-              print
-              system("cat append_options.tmp")
-              next
-            }
-            { print }
-            ' tb.html > tb.new.html
-          fi
+            if [ -z "$prev" ]; then
+              # No previous ID → insert right after OPT-START
+              awk -v opt="$option" '
+                /<!-- OPT-START -->/ {
+                  print
+                  print opt
+                  next
+                }
+                { print }
+              ' tb.new.html > tb.tmp && mv tb.tmp tb.new.html
+            else
+              # Insert after previous ID
+              awk -v prev="$prev" -v opt="$option" '
+                $0 ~ "<option value=\""prev"\">" {
+                  print
+                  print opt
+                  next
+                }
+                { print }
+              ' tb.new.html > tb.tmp && mv tb.tmp tb.new.html
+            fi
+          done
 
           mv tb.new.html tb.html
+
 
       - name: Commit updated tb.html
         run: |
