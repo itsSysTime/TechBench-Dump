@@ -85,27 +85,11 @@ jobs:
           insert_after_prev() {
             prev_val="$1"
             opt_line="$2"
-
+          
             if [ -z "$prev_val" ]; then
-              # Insert right after OPT-START
-              awk -v opt="$opt_line" '
-                /<!-- OPT-START -->/ {
-                  print
-                  print opt
-                  next
-                }
-                { print }
-              ' tb.new.html > tb.tmp && mv tb.tmp tb.new.html
+              awk -v opt="$opt_line" '/<!-- OPT-START -->/ { print; print opt; next } { print }' tb.new.html > tb.tmp && mv tb.tmp tb.new.html
             else
-              # Insert after the first occurrence of the previous option
-              awk -v prev="$prev_val" -v opt="$opt_line" '
-                $0 ~ ("<option[[:space:]]+value=\\\""prev"\\\"") {
-                  print
-                  print opt
-                  next
-                }
-                { print }
-              ' tb.new.html > tb.tmp && mv tb.tmp tb.new.html
+              awk -v prev="$prev_val" -v opt="$opt_line" '{ if (index($0, "value=\\\"" prev "\\\"")) { print; print opt; next } print }' tb.new.html > tb.tmp && mv tb.tmp tb.new.html
             fi
           }
 
