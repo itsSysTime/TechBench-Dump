@@ -19,7 +19,7 @@ jobs:
 
       - name: Ensure local main is up-to-date
         run: |
-          # find the branch name (fallback to 'main' if not found)
+          # Find the branch name (fallback to 'main' if not found)
           BRANCH=${GITHUB_REF#refs/heads/}
           if [ -z "$BRANCH" ] || [ "$BRANCH" = "refs/heads/" ]; then
             BRANCH=main
@@ -65,24 +65,24 @@ jobs:
 
       - name: Insert sorted missing IDs after previous ID
         run: |
-          # 1. Determine first missing ID
+          # Determine first missing ID
           first_missing=$(head -n 1 missing_ids.tmp)
           prev_id=$((first_missing - 1))
 
-          # 2. Sort missing IDs numerically
+          # Sort missing IDs numerically
           awk -F'"' '{print $2+0}' append_options.tmp | sort -n > sorted_ids.tmp
 
-          # 3. Remove duplicates ONLY among missing IDs
+          # Remove duplicates ONLY among missing IDs
           uniq sorted_ids.tmp > unique_missing_ids.tmp
 
-          # 4. Rebuild sorted <option> lines for missing IDs
+          # Rebuild sorted <option> lines for missing IDs
           : > append_options.tmp
           while read id; do
             label=$(jq -r --arg id "$id" '.products[$id]' option-values.json)
             echo "<option value=\"$id\">$label</option>" >> append_options.tmp
           done < unique_missing_ids.tmp
 
-          # 5. Insert the sorted missing block AFTER the previous ID
+          # Insert the sorted missing block AFTER the previous ID
           insert_line=$(grep -n "<option value=\"$prev_id\">" tb.html | cut -d: -f1)
 
           awk -v insert_line="$insert_line" '
