@@ -74,6 +74,7 @@ jobs:
           git config user.email "actions@github.com"
           git add tb.html
           git commit -m "Append new options to tb.html" || echo "No changes"
+          git pull --rebase origin main || true
           git push
 
       - name: Upload artifact for GitHub Pages
