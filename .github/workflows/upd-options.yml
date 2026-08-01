@@ -53,14 +53,13 @@ jobs:
 
       - name: Generate missing <option> tags (for reference)
         run: |
-          # Create a temp file with option lines for every missing ID (unordered)
-          jq -r --argfile missing missing_ids.tmp '
-            .products
-            | to_entries
-            | map(select(.key as $id | ($ARGS.positional | index($id))))
-            | map("<option value=\"" + (.key) + "\">" + (.value // "Unknown") + "</option>")
-            | .[]
-          ' option-values.json > append_options.tmp
+          # Create/empty append_options.tmp
+          : > append_options.tmp
+          # For each missing id, read the label from option-values.json and append an <option> line
+          while IFS= read -r id; do
+            label=$(jq -r --arg id "$id" '.products[$id] // "Unknown"' option-values.json)
+            printf '<option value="%s">%s</option>\n' "$id" "$label" >> append_options.tmp
+          done < missing_ids.tmp
 
       - name: Insert missing IDs at numeric positions and build index
         run: |
