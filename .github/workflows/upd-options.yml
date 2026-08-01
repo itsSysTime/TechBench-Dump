@@ -16,6 +16,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: true
+		  clean: false
 
       - name: Ensure local main is up-to-date
         run: |
