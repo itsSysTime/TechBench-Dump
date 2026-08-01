@@ -29,14 +29,18 @@ jobs:
           grep -vxFf existing_ids.tmp new_ids.tmp > missing_ids.tmp
 
       - name: Generate missing <option> tags
-        run: |
-          jq -r --argfile missing missing_ids.tmp '
-            .products
-            | to_entries
-            | map(select(.key as $id | ($missing | index($id))))
-            | map("<option value=\"" + (.key) + "\">" + (.value // "Unknown") + "</option>")
-            | .[]
-          ' option-values.json > append_options.tmp
+      run: |
+      # Read missing IDs into a JSON array
+      missing_json=$(jq -R -s 'split("\n") | map(select(length>0))' missing_ids.tmp)
+
+      # Generate <option> tags only for missing IDs
+      jq -r --argjson missing "$missing_json" '
+        .products
+        | to_entries
+        | map(select(.key as $id | ($missing | index($id))))
+        | map("<option value=\"" + (.key) + "\">" + (.value // "Unknown") + "</option>")
+        | .[]
+      ' option-values.json > append_options.tmp
 
       - name: Append new options into tb.html
         run: |
