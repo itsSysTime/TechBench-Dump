@@ -26,7 +26,7 @@ jobs:
 
       - name: Compute missing IDs
         run: |
-          grep -vxFf existing_ids.tmp new_ids.tmp > missing_ids.tmp
+          grep -vxFf existing_ids.tmp new_ids.tmp > missing_ids.tmp || true
 
       - name: Generate missing <option> tags
         run: |
