@@ -52,4 +52,5 @@ This project does NOT:
 
 ## Known errors
 _We encountered a problem processing your request. Please try again later._ - Insider Preview request / not signed into Microsoft account, fix: Sign into Microsoft account
+
 _Some users, entities and locations are banned from using this service_ - Generic error, fix: Clear `https://www.microsoft.com` cookies and/or wait
