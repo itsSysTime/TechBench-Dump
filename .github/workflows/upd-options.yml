@@ -44,8 +44,16 @@ jobs:
 
       - name: Sort appended options numerically
         run: |
-          sort -n -t '"' -k2 append_options.tmp > append_options.sorted.tmp
-          mv append_options.sorted.tmp append_options.tmp
+          # Extract numeric IDs cleanly
+          awk -F'"' '{print $2}' append_options.tmp | sort -n > sorted_ids.tmp
+      
+          # Rebuild sorted <option> lines
+          : > append_options.tmp
+          while read id; do
+            label=$(jq -r --arg id "$id" '.products[$id]' option-values.json)
+            echo "<option value=\"$id\">$label</option>" >> append_options.tmp
+          done < sorted_ids.tmp
+
 
       - name: Append new options into tb.html
         run: |
