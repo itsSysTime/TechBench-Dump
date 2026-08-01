@@ -17,6 +17,23 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
+      - name: Ensure local main is up-to-date
+        run: |
+          # find the branch name (fallback to 'main' if not found)
+          BRANCH=${GITHUB_REF#refs/heads/}
+          if [ -z "$BRANCH" ] || [ "$BRANCH" = "refs/heads/" ]; then
+            BRANCH=main
+          fi
+      
+          git fetch --no-tags --prune origin +refs/heads/*:refs/remotes/origin/*
+          # If the local branch exists, check it out; otherwise create it from origin
+          if git rev-parse --verify "$BRANCH" >/dev/null 2>&1; then
+            git checkout "$BRANCH"
+          else
+            git checkout -b "$BRANCH" "origin/$BRANCH"
+          fi
+          git pull --rebase origin "$BRANCH" || true
+
 
       - name: Extract existing IDs from tb.html
         run: |
@@ -78,7 +95,6 @@ jobs:
           git config user.email "actions@github.com"
           git add tb.html
           git commit -m "Append new options to tb.html" || echo "No changes"
-          git pull --rebase origin main || true
           git push
 
       - name: Upload artifact for GitHub Pages
