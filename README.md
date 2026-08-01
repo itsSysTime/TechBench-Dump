@@ -25,8 +25,16 @@ Microsoft _has_ strictened their requirements since 2021 for TechBench, and olde
 Downloading a *Windows Insider Preview*, *Windows Server LTSC Preview*, or *Windows Server Insider Preview* requires a Microsoft account to be signed into the same browser session because the Software Download Service requires this.
 
 ## How to use it
-1. Go to [https://www.microsoft.com/software-download](https://www.microsoft.com/software-download) or any sub-domain of it ([Windows 11 Software Download](https://www.microsoft.com/software-download/windows11), for example), enter DevTools on Chrome or Edge (Firefox and other browsers have a separate feature that does this), right-click the top of the HTML (beginning with _<html lang="en-US"..._) and select "Edit as HTML", then select all of the contents, remove them, and replace them with the exact contents of _tb.html_.
-2. Download any Windows version on TechBench from the drop-down menu, earliest to latest. You must be signed into a Microsoft account before downloading Windows Insider Previews.
+Go to [https://www.microsoft.com/software-download](https://www.microsoft.com/software-download) or any sub-domain of it ([Windows 11 Software Download](https://www.microsoft.com/software-download/windows11), for example), enter DevTools on Chrome or Edge, using:
+
+1. Edge, Chrome, Firefox: CTRL, SHIFT, I
+2. Safari (for Mac): COMMAND, OPTION, I
+
+
+Then, right-click the top of the HTML (beginning with _<html lang="en-US"..._) and select "Edit as HTML", then select all of the contents, remove them, and replace them with the exact contents of _tb.html_.
+
+
+Download any Windows version on TechBench from the drop-down menu, earliest to latest. You must be signed into a Microsoft account before downloading Windows Insider Previews.
 
 This is an example of a user signed into their Microsoft account when trying to download Insider Previews, it successfully shows a Download button:
 <img width="1126" height="591" alt="Signed in to MSFT account" src="https://github.com/user-attachments/assets/5503f28b-6328-448f-ac40-3b17f8d998f2" />
