@@ -9,6 +9,7 @@ This repository is a self-maintaining TechBench product mirror, hosted on GitHub
 4. Broken
 5. The API used is no longer functional or correct
 6. Not updated with the latest Windows versions
+
 This TechBench mirror happens to automatically update the product list every 8 hours, that's _three times per day_, ensuring that you don't miss out on the latest Windows versions. It also dynamically assorts product IDs and SKUs, and is completely automated, meaning little to no intervention from contributors is required.
 
 The design is supposed to be aligned with Microsoft's own **Software Download** URIs, but integrate all known TechBench products in a unified, user-friendly drop-down menu. You can download older versions of Windows from Microsoft directly.
