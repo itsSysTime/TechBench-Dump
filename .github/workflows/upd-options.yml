@@ -42,6 +42,10 @@ jobs:
             | .[]
           ' option-values.json > append_options.tmp
 
+      - name: Sort appended options numerically
+        run: |
+          sort -n -t '"' -k2 append_options.tmp > append_options.sorted.tmp
+          mv append_options.sorted.tmp append_options.tmp
 
       - name: Append new options into tb.html
         run: |
