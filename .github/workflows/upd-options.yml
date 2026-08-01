@@ -83,7 +83,7 @@ jobs:
           done < unique_missing_ids.tmp
 
           # 5. Insert the sorted missing block AFTER the previous ID
-          insert_line=$(grep -n "<option value=\"$prev_id\"" tb.html | cut -d: -f1)
+          insert_line=$(grep -n "<option value=\"$prev_id\">" tb.html | cut -d: -f1)
 
           awk -v insert_line="$insert_line" '
             NR == insert_line {
@@ -95,14 +95,6 @@ jobs:
           ' tb.html > tb.new.html
 
           mv tb.new.html tb.html
-
-      - name: Debug missing IDs
-        run: |
-          echo "=== missing_ids.tmp ==="
-          cat missing_ids.tmp
-          echo "=== append_options.tmp ==="
-          cat append_options.tmp || echo "(empty)"
-
 
       - name: Commit updated tb.html
         run: |
