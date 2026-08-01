@@ -96,6 +96,14 @@ jobs:
 
           mv tb.new.html tb.html
 
+      - name: Debug missing IDs
+        run: |
+          echo "=== missing_ids.tmp ==="
+          cat missing_ids.tmp
+          echo "=== append_options.tmp ==="
+          cat append_options.tmp || echo "(empty)"
+
+
       - name: Commit updated tb.html
         run: |
           git config user.name "GitHub Actions"
