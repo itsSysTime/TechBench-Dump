@@ -13,7 +13,7 @@ This repository is a self-maintaining TechBench product mirror, hosted on GitHub
 
 This TechBench mirror happens to automatically update the product list every 8 hours, that's _three times per day_, ensuring that you don't miss out on the latest Windows versions. It also dynamically assorts product IDs and SKUs, and is completely automated, meaning little to no intervention from contributors is required.
 
-The design is supposed to be aligned with Microsoft's own **Software Download** URIs, but integrate all known TechBench products in a unified, user-friendly drop-down menu. You can download older versions of Windows from Microsoft directly.
+The design is supposed to be aligned with Microsoft's own **Software Download** URIs, but integrate all known TechBench products in a unified, user-friendly drop-down menu. You can download older versions of Windows from Microsoft directly. Thanks to this, any user can access public Windows retail media, but this does not go the same for pre-release Windows versions _(see the note)_.
 
 Microsoft _has_ strictened their requirements since 2021 for TechBench, and older tools no longer work. This HTML page uses the reliability of using Microsoft's own _SDS_ API calls integrated into their API and does not attempt to re-create the logic, just to list multiple download links and let the server handle the logic.
 
