@@ -36,7 +36,8 @@ For a user not signed into one:
 
 ## What this project does NOT do
 This project does NOT:
-1. Grant unofficial access to proprietary _Windows IoT_ or _Long-Term Servicing Channel_ and _Volume Licensing_ versions that belong to the **Volume License Center (VLSC)**, the **Microsoft 365 Admin Center**, or **My Visual Studio (MYVS)** services.
-2. Obtain media from Microsoft's **OEM-SOC** organization endpoint
-3. Obtain pre-release Windows versions without a Microsoft account
-4. Host or mirror Server or organizational retail media
+1. Attempt to replicate Microsoft's proprietary SDS API calls independently
+2. Grant unofficial access to proprietary _Windows IoT_ or _Long-Term Servicing Channel_ and _Volume Licensing_ versions that belong to the **Volume License Center (VLSC)**, the **Microsoft 365 Admin Center**, or **My Visual Studio (MYVS)** services.
+3. Obtain media from Microsoft's **OEM-SOC** organization endpoint
+4. Obtain pre-release Windows versions without a Microsoft account
+5. Host or mirror Server or organizational retail media
