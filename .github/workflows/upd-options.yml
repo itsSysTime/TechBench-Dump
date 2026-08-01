@@ -38,9 +38,9 @@ jobs:
 
       - name: Extract existing IDs from tb.html
         run: |
-          sed -n '/<!-- OPT-START -->/,/<!-- OPT-END -->/p' tb.html \
-            | grep -oP '<option\s+value="\K[0-9]+' \
-            > existing_ids.tmp
+          # Extract option block and existing IDs in their current display order
+          sed -n '/<!-- OPT-START -->/,/<!-- OPT-END -->/p' tb.html > options_block.tmp
+          grep -oP '<option\s+value="\K[0-9]+' options_block.tmp > existing_ids.tmp
 
       - name: Extract new IDs from option-values.json
         run: |
@@ -48,51 +48,48 @@ jobs:
 
       - name: Compute missing IDs
         run: |
+          # IDs present in JSON but not currently in tb.html (preserve one per line)
           grep -vxFf existing_ids.tmp new_ids.tmp > missing_ids.tmp || true
 
-      - name: Generate missing <option> tags
+      - name: Generate missing <option> tags (for reference)
         run: |
-          # Read missing IDs into a JSON array
-          missing_json=$(jq -R -s 'split("\n") | map(select(length>0))' missing_ids.tmp)
-      
-          # Generate <option> tags only for missing IDs
-          jq -r --argjson missing "$missing_json" '
+          # Create a temp file with option lines for every missing ID (unordered)
+          jq -r --argfile missing missing_ids.tmp '
             .products
             | to_entries
-            | map(select(.key as $id | ($missing | index($id))))
+            | map(select(.key as $id | ($ARGS.positional | index($id))))
             | map("<option value=\"" + (.key) + "\">" + (.value // "Unknown") + "</option>")
             | .[]
           ' option-values.json > append_options.tmp
 
-      - name: Insert sorted missing IDs at correct numeric positions
+      - name: Insert missing IDs at numeric positions and build index
         run: |
-          # Sort missing IDs
-          sort -n missing_ids.tmp | uniq > unique_missing_ids.tmp
+          set -euo pipefail
 
-          # Sort existing IDs
-          sort -n existing_ids.tmp > sorted_existing_ids.tmp
+          # Normalize and unique-sort missing IDs numerically
+          sort -n missing_ids.tmp | uniq > unique_missing_ids.tmp || true
 
-          # Load missing IDs into array
-          mapfile -t missing < unique_missing_ids.tmp
+          # Load missing IDs into array (processing order: ascending)
+          mapfile -t missing < unique_missing_ids.tmp || true
 
-          # Load existing IDs into array
-          mapfile -t existing < sorted_existing_ids.tmp
+          # Load existing IDs in their current display order into array
+          mapfile -t existing < existing_ids.tmp || true
 
-          # Prepare working file
+          # Work on a copy of the html
           cp tb.html tb.new.html
 
-          # For each missing ID, find correct insertion point
-          for id in "${missing[@]}"; do
-            # Find previous existing ID
-            prev=$(printf "%s\n" "${existing[@]}" | awk -v id="$id" '$1 < id {print}' | tail -n 1)
+          # Prepare JSON index for missing items
+          echo "[" > missing_index.json
+          first=true
 
-            # Build option line
-            label=$(jq -r --arg id "$id" '.products[$id]' option-values.json)
-            option="<option value=\"$id\">$label</option>"
+          # Helper function to insert option after a matching option value
+          insert_after_prev() {
+            prev_val="$1"
+            opt_line="$2"
 
-            if [ -z "$prev" ]; then
-              # No previous ID → insert right after OPT-START
-              awk -v opt="$option" '
+            if [ -z "$prev_val" ]; then
+              # Insert right after OPT-START
+              awk -v opt="$opt_line" '
                 /<!-- OPT-START -->/ {
                   print
                   print opt
@@ -101,9 +98,9 @@ jobs:
                 { print }
               ' tb.new.html > tb.tmp && mv tb.tmp tb.new.html
             else
-              # Insert after previous ID
-              awk -v prev="$prev" -v opt="$option" '
-                $0 ~ "<option value=\""prev"\">" {
+              # Insert after the first occurrence of the previous option
+              awk -v prev="$prev_val" -v opt="$opt_line" '
+                $0 ~ ("<option[[:space:]]+value=\\\""prev"\\\"") {
                   print
                   print opt
                   next
@@ -111,18 +108,99 @@ jobs:
                 { print }
               ' tb.new.html > tb.tmp && mv tb.tmp tb.new.html
             fi
+          }
+
+          # Iterate missing IDs in ascending order so earlier small IDs are placed first
+          for id in "${missing[@]:-}"; do
+            # Build label and option line
+            label=$(jq -r --arg id "$id" '.products[$id] // "Unknown"' option-values.json)
+            # Escape backslashes and double quotes for safe insertion into awk variable
+            esc_label=$(printf '%s' "$label" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
+            option_line="<option value=\"$id\">$esc_label</option>"
+
+            # Append to missing_index.json
+            if [ "$first" = true ]; then
+              first=false
+            else
+              echo "," >> missing_index.json
+            fi
+            # Escape quotes in label for JSON
+            json_label=$(printf '%s' "$label" | sed 's/"/\\"/g')
+            printf '  {"id":"%s","label":"%s"}' "$id" "$json_label" >> missing_index.json
+
+            # Determine the preferred previous ID: check id-1 first
+            prev_candidate=$((id - 1))
+            placed=false
+
+            if [ "$prev_candidate" -ge 0 ]; then
+              # Check if prev_candidate exists in current existing array
+              for i in "${!existing[@]}"; do
+                if [ "${existing[$i]}" = "$prev_candidate" ]; then
+                  insert_after_prev "$prev_candidate" "$option_line"
+
+                  # Insert id into existing array after index i
+                  idx=$((i + 1))
+                  existing=("${existing[@]:0:$idx}" "$id" "${existing[@]:$idx}")
+                  placed=true
+                  break
+                fi
+              done
+            fi
+
+            if [ "$placed" = false ]; then
+              # If direct prev not found, find the greatest existing ID less than current id
+              candidate_index=-1
+              for i in "${!existing[@]}"; do
+                if [ "${existing[$i]}" -lt "$id" ]; then
+                  candidate_index=$i
+                fi
+              done
+
+              if [ "$candidate_index" -ge 0 ]; then
+                candidate_id=${existing[$candidate_index]}
+                insert_after_prev "$candidate_id" "$option_line"
+                idx=$((candidate_index + 1))
+                existing=("${existing[@]:0:$idx}" "$id" "${existing[@]:$idx}")
+                placed=true
+              else
+                # No previous existing ID less than id → insert after OPT-START (beginning)
+                insert_after_prev "" "$option_line"
+                # Prepend to existing array
+                existing=("$id" "${existing[@]}")
+                placed=true
+              fi
+            fi
+
+            # Remove this id from missing_ids.tmp so it's updated after each detection
+            if [ -f missing_ids.tmp ]; then
+              grep -vxF "$id" missing_ids.tmp > missing_ids.tmp.tmp || true
+              mv missing_ids.tmp.tmp missing_ids.tmp || true
+            fi
+
           done
 
+          # Close JSON array
+          echo "" >> missing_index.json
+          echo "]" >> missing_index.json
+
+          # Replace final file
           mv tb.new.html tb.html
 
+          # Update a helper file with updated existing IDs order (for debugging/verification)
+          printf "%s\n" "${existing[@]}" > sorted_existing_ids_after_insert.tmp || true
 
-      - name: Commit updated tb.html
+          # If there are still ids left in missing_ids.tmp (unplaceable), keep them; otherwise remove file
+          if [ ! -s missing_ids.tmp ]; then
+            rm -f missing_ids.tmp || true
+          fi
+
+      - name: Commit updated tb.html and index
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add tb.html
-          git commit -m "Append new options to tb.html" || echo "No changes"
-          git push
+          git add tb.html missing_index.json || true
+          git commit -m "Append new options to tb.html and add missing_index.json" || echo "No changes"
+          git push || true
 
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3
