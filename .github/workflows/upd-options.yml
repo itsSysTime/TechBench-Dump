@@ -17,7 +17,7 @@ jobs:
       - name: Extract existing IDs from tb.html
         run: |
           sed -n '/<!-- OPT-START -->/,/<!-- OPT-END -->/p' tb.html \
-            | grep -oP 'value="\K[0-9]+' \
+            | grep -oP '<option\s+value="\K[0-9]+' \
             > existing_ids.tmp
 
       - name: Extract new IDs from option-values.json
@@ -30,13 +30,13 @@ jobs:
 
       - name: Generate missing <option> tags
         run: |
-          jq -r '
+          jq -r --argfile missing missing_ids.tmp '
             .products
             | to_entries
-            | map(select(.key as $id | (input | split("\n") | index($id))?))
+            | map(select(.key as $id | ($missing | index($id))))
             | map("<option value=\"" + (.key) + "\">" + (.value // "Unknown") + "</option>")
             | .[]
-          ' option-values.json missing_ids.tmp > append_options.tmp
+          ' option-values.json > append_options.tmp
 
       - name: Append new options into tb.html
         run: |
