@@ -2,7 +2,7 @@ name: Append new options to tb.html
 
 on:
   workflow_run:
-    workflows: ["Update dump.json"]
+    workflows: ["Generate option-values.json"]
     types:
       - completed
   workflow_dispatch:
