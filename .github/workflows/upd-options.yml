@@ -70,7 +70,7 @@ jobs:
           prev_id=$((first_missing - 1))
 
           # Sort missing IDs numerically
-          awk -F'"' 'print {$2+0}' append_options.tmp | sort -n > sorted_ids.tmp
+          awk -F'"' '{print $2+0}' append_options.tmp | sort -n > sorted_ids.tmp
 
           # Remove duplicates ONLY among missing IDs
           uniq sorted_ids.tmp > unique_missing_ids.tmp
@@ -85,7 +85,7 @@ jobs:
           # Insert the sorted missing ID block AFTER the previous ID
           insert_line=$(grep -n "<option value=\"$prev_id\">" tb.html | cut -d: -f1)
 
-          awk -v insert_lime="$insert_line" '
+          awk -v insert_line="$insert_line" '
           NR == insert_line {
             print
             system("cat append_options.tmp")
