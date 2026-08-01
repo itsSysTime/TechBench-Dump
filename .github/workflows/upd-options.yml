@@ -63,28 +63,35 @@ jobs:
             | .[]
           ' option-values.json > append_options.tmp
 
-      - name: Sort appended options numerically
+      - name: Insert sorted missing IDs after previous ID
         run: |
-          # Extract numeric IDs cleanly
-          awk -F'"' '{print $2}' append_options.tmp | sort -n > sorted_ids.tmp
-      
-          # Rebuild sorted <option> lines
+          # 1. Determine first missing ID
+          first_missing=$(head -n 1 missing_ids.tmp)
+          prev_id=$((first_missing - 1))
+
+          # 2. Sort missing IDs numerically
+          awk -F'"' '{print $2+0}' append_options.tmp | sort -n > sorted_ids.tmp
+
+          # 3. Remove duplicates ONLY among missing IDs
+          uniq sorted_ids.tmp > unique_missing_ids.tmp
+
+          # 4. Rebuild sorted <option> lines for missing IDs
           : > append_options.tmp
           while read id; do
             label=$(jq -r --arg id "$id" '.products[$id]' option-values.json)
             echo "<option value=\"$id\">$label</option>" >> append_options.tmp
-          done < sorted_ids.tmp
+          done < unique_missing_ids.tmp
 
+          # 5. Insert the sorted missing block AFTER the previous ID
+          insert_line=$(grep -n "<option value=\"$prev_id\"" tb.html | cut -d: -f1)
 
-      - name: Append new options into tb.html
-        run: |
-          awk '
-            /<!-- OPT-START -->/ {
+          awk -v insert_line="$insert_line" '
+            NR == insert_line {
               print
               system("cat append_options.tmp")
               next
             }
-            {print}
+            { print }
           ' tb.html > tb.new.html
 
           mv tb.new.html tb.html
