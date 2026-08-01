@@ -1,0 +1,42 @@
+name: Generate option-values.json
+
+on:
+  workflow_run:
+    workflows: ["Update dump.json"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Generate option-values.json
+        run: |
+          jq '{ products: .products }' dump.json > option-values.json
+
+      - name: Commit option-values.json
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add option-values.json
+          git commit -m "Auto-generate option-values.json" || echo "No changes"
+          git push
+
+      - name: Upload artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: generate
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
