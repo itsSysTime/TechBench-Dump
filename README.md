@@ -13,7 +13,9 @@ Downloading a *Windows Insider Preview*, *Windows Server LTSC Preview*, or *Wind
 2. Download any Windows version on TechBench from the drop-down menu, earliest to latest. You must be signed into a Microsoft account before downloading Windows Insider Previews.
 
 This is an example of a user signed into their Microsoft account when trying to download Insider Previews, it successfully shows a Download button:
-<img width="1126" height="591" alt="image" src="https://github.com/user-attachments/assets/5503f28b-6328-448f-ac40-3b17f8d998f2" />
+<img width="1126" height="591" alt="Signed in to MSFT account" src="https://github.com/user-attachments/assets/5503f28b-6328-448f-ac40-3b17f8d998f2" />
 
 For a user not signed into one:
-<img width="1341" height="595" alt="image" src="https://github.com/user-attachments/assets/bfd6e9b0-ad35-42b9-9d0c-c55a5abd87b8" />
+<img width="1341" height="595" alt="Not signed in to MSFT account" src="https://github.com/user-attachments/assets/bfd6e9b0-ad35-42b9-9d0c-c55a5abd87b8" />
+
+Microsoft _has_ strictened their requirements since 2021 for TechBench, and older tools no longer work. This HTML page uses the reliability of using Microsoft's own _SDS_ API calls integrated into their API and does not attempt to re-create the logic, just to list multiple download links and let the server handle the logic.
