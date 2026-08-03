@@ -55,4 +55,4 @@ _We encountered a problem processing your request. Please try again later._ - In
 
 _Some users, entities and locations are banned from using this service_ - Generic error, fix: Clear `https://www.microsoft.com` cookies and/or wait
 
-_GatewayExceptionResponse_ - Microsoft pulled this .ISO media from its servers. No fix
+_GatewayExceptionResponse_ - Microsoft pulled this .ISO media from its servers. No fix.
