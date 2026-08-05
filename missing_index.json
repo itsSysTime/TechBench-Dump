@@ -1551,5 +1551,17 @@
   {"id":"3595","label":"Windows ADK Insider Preview - Build 26100.8772"},
   {"id":"3597","label":"Windows ADK Insider Preview - Build 28000.2387"},
   {"id":"3604","label":"Windows ADK Insider Preview - Build 26100.8935"},
-  {"id":"3606","label":"Windows ADK Insider Preview - Build 28000.2546"}
+  {"id":"3606","label":"Windows ADK Insider Preview - Build 28000.2546"},
+  {"id":"3628","label":"Windows 11 Enterprise VL Insider Preview - Build 29639.1000"},
+  {"id":"3629","label":"Windows 11 China Only Insider Preview - Build 29639.1000"},
+  {"id":"3630","label":"Windows 11 Client Insider Preview - Build 29639.1000"},
+  {"id":"3631","label":"Windows 11 Client ARM64 Insider Preview - Build 29639.1000"},
+  {"id":"3632","label":"Windows 11 Enterprise VL Insider Preview - Build 28120.2630"},
+  {"id":"3633","label":"Windows 11 Client Insider Preview - Build 28120.2630"},
+  {"id":"3634","label":"Windows 11 China Only Insider Preview - Build 28120.2630"},
+  {"id":"3635","label":"Windows 11 Client ARM64 Insider Preview - Build 28120.2630"},
+  {"id":"3636","label":"Windows 11 Enterprise VL Insider Preview - Build 28020.2623"},
+  {"id":"3637","label":"Windows 11 Client Insider Preview - Build 28020.2623"},
+  {"id":"3638","label":"Windows 11 Client ARM64 Insider Preview - Build 28020.2623"},
+  {"id":"3639","label":"Windows 11 China Only Insider Preview - Build 28020.2623"}
 ]
