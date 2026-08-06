@@ -42,6 +42,19 @@ This is an example of a user signed into their Microsoft account when trying to 
 For a user not signed into one:
 <img width="1341" height="595" alt="Not signed in to MSFT account" src="https://github.com/user-attachments/assets/bfd6e9b0-ad35-42b9-9d0c-c55a5abd87b8" />
 
+## Searching for products
+Searching for products is easy - it's usually scroll, click when you find it, select the language, and you're done. But sometimes, this is not always convenient. You might have to scroll, look in between Insider Previews, take a glimpse _believing_ its the right entry just for it to be wrong. That creates unnecessary time spent searching. However, there is a much more efficient method; typing into the drop-down menu.
+
+You can select the drop-down menu, and type to find. This reduces overall searching time by around _25-35 seconds_, and the fastest I was able to retrieve a download link was around just _10 seconds with the Windows 11 v23H2 v2 entry_. For example, you only need to type:
+
+`windows 11 2023`
+
+To get the base _Windows 11 v23H2_ multi-edition ISO. However, if you want the updated v2 revision, you will add:
+
+`  update (v23H2  `
+
+It is especially the better overall option if you type fast and accurately. This is currently the most efficient method to browse the SDS catalogue without spending unnecessary time, and it is also best for Insider Previews that blend in with other entries as well. While this method requires exact grammar and spelling, this method is easy and straight-forward to use.
+
 ## What this project does NOT do
 This project does NOT:
 1. Attempt to replicate Microsoft's proprietary SDS API calls independently
