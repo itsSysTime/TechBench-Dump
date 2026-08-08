@@ -7,18 +7,8 @@ This repository is a self-maintaining TechBench product mirror, hosted on GitHub
 2. Using out-dated proxies
 3. Using a small subset of product IDs
 4. Broken
-5. The API used is no longer functional or correct## TechBench Dump and API (Static HTML)</h2>
-This repository is intended to fetch TechBench content, including older Office downloads, Windows 7 SP1, Windows 8.1 RTM, Windows 10, Windows Server Insider/LTSC Previews, Windows 11, and Windows 10/11 Insider Previews.
-
-## How this project was made
-This repository is a self-maintaining TechBench product mirror, hosted on GitHub and updates its dump multiple times daily. Thanks to GitHub Actions, the YAML workflows take care of all the work updating the repository, while you only need to copy the _tb.html_ file to a Software Download URI and overwrite the default page contents with these updated contents. That's the definition of _user-friendly_. While most, older TechBench API mirrors are:
-1. Obsolete due to Microsoft tightening of TechBench rules
-2. Using out-dated proxies
-3. Using a small subset of product IDs
-4. Broken
 5. The API used is no longer functional or correct
 6. Not updated with the latest Windows versions
-
 
 This TechBench mirror happens to automatically update the product list every 8 hours, that's _three times per day_, ensuring that you don't miss out on the latest Windows versions. It also dynamically assorts product IDs and SKUs, and is completely automated, meaning little to no intervention from contributors is required.
 
